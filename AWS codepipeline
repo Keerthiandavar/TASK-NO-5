@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+  pre_build:
+    commands:
+      - echo Logging in to DockerHub
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  build:
+    commands:
+      - echo Building Docker image
+      - docker build -t <image-name> .
+      - docker tag <image-name> <registry-url>/<image-name>:<version>
+  post_build:
+    commands:
+      - echo Pushing Docker image to registry
+      - docker push <registry-url>/<image-name>:<version>
