@@ -1,0 +1,37 @@
+# Set up environment variables
+variables:
+  DOCKER_DRIVER: overlay2
+
+# Set up the pipeline stages
+stages:
+  - build
+  - test
+  - deploy
+
+# Build stage: build the code and Docker image
+build:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  script:
+    - docker build -t my-app-image .
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker push my-app-image
+
+# Test stage: run tests on the code
+test:
+  image: my-app-image
+  stage: test
+  script:
+    - run-tests.sh
+
+# Deploy stage: deploy the Docker image to production
+deploy:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: deploy
+  script:
+    - docker pull my-app-image
+    - docker run -d -p 80:80 my-app-image
