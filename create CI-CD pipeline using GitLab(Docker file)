@@ -33,5 +33,6 @@ deploy:
     - docker:dind
   stage: deploy
   script:
+  
     - docker pull my-app-image
     - docker run -d -p 80:80 my-app-image
